@@ -63,7 +63,7 @@ Analyze the rotations in your attached document. What's the actual password to o
 
 using System.IO;
 
-string filePath = "day1part1input.txt"; // Replace with your file path
+string filePath = "../day1input.txt";
 try
 {
     string[] fileContents = File.ReadAllLines(filePath);
