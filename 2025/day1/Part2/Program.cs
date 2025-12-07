@@ -32,18 +32,21 @@ Using password method 0x434C49434B, what is the password to open the door?
 
 
 using System.IO;
+using System.Runtime.CompilerServices;
 
 string filePath = "../day1input.txt"; 
 try
 {
     string[] fileContents = File.ReadAllLines(filePath);
-    Console.WriteLine($"Total lines read: {fileContents.Length}");
+    // File.AppendAllText("output.txt",$"Total lines read: {fileContents.Length}\n");
 
     int totalZeros = 0;
     int dialPosition = 50;
 
     for (int i = 0; i < fileContents.Length; i++)
     {
+        // File.AppendAllText("output.txt",$"\n\n\nProcessing new line, total zeros is {totalZeros}, dial position is {dialPosition}, currently processing {fileContents[i]}\n");
+
         bool startsWithL = fileContents[i].StartsWith('L');
         bool startsWithR = fileContents[i].StartsWith('R');
 
@@ -57,52 +60,76 @@ try
             throw new Exception($"The substring '{fileContents[i].Substring(1)}' cannot be parsed as an integer.");
         }
 
+
         while (result >= 100)
         {
+            // File.AppendAllText("output.txt",$"Result is currently {result}, about to decrement 100 and add to totalZeros\n");
+            totalZeros++;
+            // File.AppendAllText("output.txt",$"Total zeros is {totalZeros} after increment in the while loop\n");
             result -= 100;
         }
 
-        if (startsWithL)
+        if (result != 0)
         {
-            Console.WriteLine($"Subtracting {result} from current dial position");
-            if (result > dialPosition)
+            if (startsWithL)
             {
-                Console.WriteLine("Will roll past 0, calculating delta");
-                int delta = Math.Abs(dialPosition-result);
-                Console.WriteLine($"Delta calculated to be {delta}");
-                dialPosition = 100 - delta;
+                // File.AppendAllText("output.txt",$"Subtracting {result} from current dial position\n");
+                if (dialPosition == 0)
+                {
+                    // File.AppendAllText("output.txt","Dial position is zero, subtracting without logging zero\n");
+                    dialPosition = 100 - result;
+                }
+                else if (result > dialPosition)
+                {
+                    // File.AppendAllText("output.txt","Will roll past 0, calculating delta\n");
+                    int delta = Math.Abs(dialPosition-result);
+                    // File.AppendAllText("output.txt",$"Delta calculated to be {delta}\n");
+                    dialPosition = 100 - delta;
+                    if (dialPosition != 0)
+                    {
+                        totalZeros++;
+                        // File.AppendAllText("output.txt",$"Subtracted enough to roll past zero, incremented total zeros to {totalZeros}\n");
+                    }
+                } 
+                else
+                {
+                    dialPosition -= result;
+                }
             } 
-            else
+            else if (startsWithR)
             {
-                dialPosition -= result;
+                // File.AppendAllText("output.txt",$"Adding {result} to current dial position\n");
+                if (dialPosition + result > 99)
+                {
+                    // File.AppendAllText("output.txt","Will roll past 99, calculating delta\n");
+                    int delta = dialPosition + result  - 100;
+                    // File.AppendAllText("output.txt",$"Delta calculated to be {delta}\n");
+                    dialPosition = delta;
+                    if (dialPosition > 0)
+                    {
+                        totalZeros++;
+                        // File.AppendAllText("output.txt",$"Added enough to roll past 99, incremented total zeros to {totalZeros}\n");
+                    }
+                }
+                else
+                {
+                    dialPosition += result;
+                }
             }
-        } 
-        else if (startsWithR)
-        {
-            Console.WriteLine($"Adding {result} to current dial position");
-            if (dialPosition + result > 99)
-            {
-                Console.WriteLine("Will roll past 99, calculating delta");
-                int delta = result + dialPosition - 100;
-                Console.WriteLine($"Delta calculated to be {delta}");
-                dialPosition = delta;
-            }
-            else
-            {
-                dialPosition += result;
-            }
-        }
 
-        Console.WriteLine($"Dial position is now at {dialPosition}");
+            // File.AppendAllText("output.txt",$"Dial position is now at {dialPosition}\n");
 
-        if (dialPosition == 0)
-        {
-            totalZeros++;
+            if (dialPosition == 0)
+            {
+                totalZeros++;
+                // File.AppendAllText("output.txt",$"total zeros incremented to {totalZeros}");
+            }
         }
     }
-    Console.WriteLine($"Dial position landed on zero {totalZeros} times");
+    // File.AppendAllText("output.txt",$"Dial position landed onand passed zero {totalZeros} times\n");
+    Console.WriteLine($"Dial position landed on and passed zero {totalZeros} times\n");
 }
 catch (IOException e)
 {
-    Console.WriteLine($"Error reading file: {e.Message}");
+    // File.AppendAllText("output.txt",$"Error reading file: {e.Message}\n");
 }
